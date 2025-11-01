@@ -1,1 +1,1 @@
-docker run --gpus all -d --rm --name ocr_cli_runner --shm-size=256m  -i ocr-v2-cli-py310:latest
+docker run --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined -d --rm --name ocr_cli_runner --shm-size=256m  -i ocr-v2-cli-py310:latest

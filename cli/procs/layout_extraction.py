@@ -8,6 +8,7 @@ import copy
 import xml.etree.ElementTree as ET
 import lxml
 import numpy
+import torch
 
 from .base_proc import BaseInferenceProcess
 
@@ -28,7 +29,12 @@ class LayoutExtractionProcess(BaseInferenceProcess):
         """
         super().__init__(cfg, pid, '_layer_ext')
         from submodules.ndl_layout.tools.process_textblock import InferencerWithCLI
-        self._inferencer = InferencerWithCLI(self.cfg['layout_extraction'])
+
+        layout_cfg = self.cfg['layout_extraction'].copy()
+        if layout_cfg['device'] == 'auto':
+            layout_cfg['device'] = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+        self._inferencer = InferencerWithCLI(layout_cfg)
         self._run_submodule_inference = self._inferencer.inference_with_cli
 
     def is_valid_input(self, input_data):

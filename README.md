@@ -30,26 +30,10 @@ OCRを実現するための各機能はhttps://github.com/ndl-lab
 ```
 git clone --recursive https://github.com/ndl-lab/ndlocr_cli
 ```
-### 2. ホストマシンのNVIDIA Driverのアップデート
-コンテナ内でCUDA 11.1を利用します。
+### 2. ホストマシンのGPUドライバのアップデート
+コンテナ内でROCmを利用します。
 
-ホストマシンのNVIDIA Driverが
-
-Linuxの場合: 450.36.06以上 
-
-Windowsの場合:520.06以上
-
-のバージョンを満たさない場合は、ご利用のGPUに対応するドライバの更新を行ってください。
-
-（参考情報）
-
-以下のホストマシン環境（AWS g5.xlargeインスタンス）上で動作確認を行っています。
-
-OS: Ubuntu 18.04.6 LTS
-
-GPU: NVIDIA A10G
-
-NVIDIA Driver: 470.182.03
+ホストマシンにROCmドライバが正しくインストールされていることを確認してください。
 
 
 
@@ -79,8 +63,10 @@ Linux:
 
 例：/home/user/tmpdirの直下に画像ファイルがある場合
 ```
-docker run --gpus all -d --rm --name ocr_cli_runner -v /home/user/tmpdir:/root/tmpdir/img -i ocr-v2-cli-py38:latest
+docker run --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined -d --rm --name ocr_cli_runner -v /home/user/tmpdir:/root/tmpdir/img -i ocr-v2-cli-py312:latest
 ```
+
+注意: システムの構成によっては、GPUデバイスにアクセスするために、ユーザーを `video` または `render` グループに追加する必要がある場合があります。または、`docker run` コマンドに `--group-add video` または `--group-add render` を追加することもできます。
 
 
 ### 6. dockerコンテナの起動
@@ -333,7 +319,7 @@ graph TD
 
 `/usr/local/lib/python3.8/dist-packages/mmdet/models/roi_heads/mask_heads/fcn_mask_head.py`
 
-例えば`RuntimeError: CUDA out of memory.`というエラーが発生した場合、
+例えば`RuntimeError: HIP out of memory.`というエラーが発生した場合、
 `GPU_MEM_LIMIT`の行を次のように編集してGPUメモリの使用量を半減させることで
 エラーの発生が抑えられることがあります
 

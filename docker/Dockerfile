@@ -1,9 +1,6 @@
-FROM nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04
+FROM rocm/pytorch:rocm6.4.2_ubuntu24.04_py3.12_pytorch_release_2.6.0
 
 ENV PROJECT_DIR=/root/ocr_cli
-ENV FORCE_CUDA="1"
-ENV TORCH_CUDA_ARCH_LIST="7.5+PTX"
-ENV TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
 
 RUN set -x \
     && apt update \
@@ -25,7 +22,7 @@ ENV TZ=Asia/Tokyo
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 
-RUN set -x && pip3 install torch==2.1.1 torchvision==0.16.1 torchaudio==2.1.1 torchtext==0.16.1 --index-url https://download.pytorch.org/whl/cu121
+
 
 RUN set -x \
     && wget http://www.phontron.com/kytea/download/kytea-0.4.7.tar.gz \
@@ -43,6 +40,7 @@ COPY requirements.txt ${PROJECT_DIR}
 COPY config.yml ${PROJECT_DIR}
 COPY eval_config.yml ${PROJECT_DIR}
 RUN set -x \
+    && pip3 install numpy==1.26.4 \
     && pip install -r ${PROJECT_DIR}/requirements.txt
 
 COPY submodules/deskew_HT ${PROJECT_DIR}/submodules/deskew_HT
@@ -58,6 +56,6 @@ RUN set -x \
     && pip3 install mmdet==3.3.0\
     && pip3 install -r ${PROJECT_DIR}/submodules/ruby_prediction/requirements.txt
 
-RUN set -x && pip3 install mmcv==2.1.0 -f https://download.openmmlab.com/mmcv/dist/cu121/torch2.1/index.html
+
 
 WORKDIR ${PROJECT_DIR}
