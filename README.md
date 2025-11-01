@@ -63,7 +63,7 @@ Linux:
 
 例：/home/user/tmpdirの直下に画像ファイルがある場合
 ```
-docker run --device=/dev/kfd --device=/dev/dri --security-opt seccomp=unconfined -d --rm --name ocr_cli_runner -v /home/user/tmpdir:/root/tmpdir/img -i ocr-v2-cli-py312:latest
+docker run --device=/dev/dxg --security-opt seccomp=unconfined -d --rm --name ocr_cli_runner -v /home/user/tmpdir:/root/tmpdir/img -i ocr-v2-cli-py312:latest
 ```
 
 注意: システムの構成によっては、GPUデバイスにアクセスするために、ユーザーを `video` または `render` グループに追加する必要がある場合があります。または、`docker run` コマンドに `--group-add video` または `--group-add render` を追加することもできます。
