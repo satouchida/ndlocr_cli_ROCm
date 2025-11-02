@@ -7,7 +7,7 @@ joblib
 lmdb
 lxml==4.9.3
 nltk==3.6.2
-numpy==1.26.4
+numpy==1.24.4
 omegaconf
 opencv-python
 pandas==1.5.3
@@ -17,7 +17,10 @@ lightning==2.0.0
 pyyaml
 rich
 scikit-image
-scikit-learn==1.2.2
+scikit-learn
 transformers==4.45.2
 wheel
 pyarrow==15.0.0
+mmdet==3.3.0
+kytea==0.1.7
+regex==2022.10.31
