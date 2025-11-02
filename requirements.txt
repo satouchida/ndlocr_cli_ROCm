@@ -13,10 +13,11 @@ opencv-python
 pandas==1.5.3
 mmpretrain==1.2.0
 pyrootutils
-pytorch-lightning==1.6.5
+lightning==2.0.0
 pyyaml
 rich
 scikit-image
 scikit-learn==1.2.2
 transformers==4.45.2
 wheel
+pyarrow==15.0.0

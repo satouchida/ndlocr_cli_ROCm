@@ -7,5 +7,5 @@ wget -nc https://lab.ndl.go.jp/dataset/ndlocr_v2/text_recognition_lightning/rf_t
 wget -nc https://lab.ndl.go.jp/dataset/ndlocr_v2/ndl_layout/ndl_retrainmodel.pth -P ./submodules/ndl_layout/models
 wget -nc https://lab.ndl.go.jp/dataset/ndlocr_v2/separate_pages_mmdet/epoch_180.pth -P ./submodules/separate_pages_mmdet/models
 cp ${DOCKERIGNORE} .dockerignore
-docker build -t ${TAG} -f ${DOCKERFILE} .
+docker build --no-cache -t ${TAG} -f ${DOCKERFILE} .
 rm .dockerignore

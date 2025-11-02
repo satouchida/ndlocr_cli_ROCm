@@ -1,4 +1,4 @@
-FROM rocm/pytorch:rocm6.4.2_ubuntu24.04_py3.12_pytorch_release_2.6.0
+FROM rocm/pytorch:rocm5.7_ubuntu22.04_py3.10_pytorch_2.0.1
 
 ENV PROJECT_DIR=/root/ocr_cli
 
@@ -16,9 +16,12 @@ ENV LC_ALL=ja_JP.UTF-8
 RUN localedef -f UTF-8 -i ja_JP ja_JP.utf8
 
 
-RUN set -x && apt -y install libgl1-mesa-dev libglib2.0-0 zip git python3-pip wget
+RUN set -x     && apt-get update && apt-get install -y libgl1-mesa-dev libglib2.0-0 zip git python3-pip wget cmake curl
+RUN ln -sf /usr/bin/python3 /usr/bin/python
 
 ENV TZ=Asia/Tokyo
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 
@@ -39,9 +42,9 @@ COPY README.md ${PROJECT_DIR}
 COPY requirements.txt ${PROJECT_DIR}
 COPY config.yml ${PROJECT_DIR}
 COPY eval_config.yml ${PROJECT_DIR}
-RUN set -x \
-    && pip3 install numpy==1.26.4 \
-    && pip install -r ${PROJECT_DIR}/requirements.txt
+RUN apt-get update && \
+    apt-get install -y cmake
+RUN set -x     && pip install --no-cache-dir --verbose -r ${PROJECT_DIR}/requirements.txt
 
 COPY submodules/deskew_HT ${PROJECT_DIR}/submodules/deskew_HT
 COPY submodules/ndl_layout ${PROJECT_DIR}/submodules/ndl_layout
