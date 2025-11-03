@@ -20,10 +20,9 @@ COPY docker/setup.sh /root/setup.sh
 RUN chmod +x /root/setup.sh && /root/setup.sh
 
 RUN pip install --upgrade pip
-RUN which cmake
-RUN cmake --version
-RUN find / -name "libkytea.so*"
-RUN ldconfig -p | grep kytea
+RUN pip install -U openmim
+RUN mim install mmengine
+RUN mim install "mmcv>=2.0.0rc4"
 
 COPY cli ${PROJECT_DIR}/cli
 COPY main.py ${PROJECT_DIR}
