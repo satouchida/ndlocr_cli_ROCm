@@ -19,6 +19,12 @@ RUN localedef -f UTF-8 -i ja_JP ja_JP.utf8
 COPY docker/setup.sh /root/setup.sh
 RUN chmod +x /root/setup.sh && /root/setup.sh
 
+RUN pip install --upgrade pip
+RUN which cmake
+RUN cmake --version
+RUN find / -name "libkytea.so*"
+RUN ldconfig -p | grep kytea
+
 COPY cli ${PROJECT_DIR}/cli
 COPY main.py ${PROJECT_DIR}
 COPY README.md ${PROJECT_DIR}
