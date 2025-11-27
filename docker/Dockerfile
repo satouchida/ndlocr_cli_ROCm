@@ -23,13 +23,13 @@ RUN pip install --upgrade pip
 RUN pip install mmengine ninja
 RUN git clone https://github.com/open-mmlab/mmcv.git -b v2.1.0 \
     && cd mmcv \
-    && MMCV_WITH_OPS=1 FORCE_CUDA=1 pip install --no-build-isolation . \
+    && MAX_JOBS=2 MMCV_WITH_OPS=1 FORCE_CUDA=1 pip install --no-build-isolation . \
     && cd .. \
     && rm -rf mmcv
 RUN git clone https://github.com/open-mmlab/mmdetection.git -b v3.3.0 \
     && cd mmdetection \
     && pip install -r requirements/build.txt \
-    && FORCE_CUDA=1 pip install --no-build-isolation . \
+    && MAX_JOBS=2 FORCE_CUDA=1 pip install --no-build-isolation . \
     && cd .. \
     && rm -rf mmdetection
 
