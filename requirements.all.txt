@@ -21,6 +21,6 @@ scikit-learn
 transformers==4.45.2
 wheel
 pyarrow==15.0.0
-mmdet==3.3.0
+
 kytea==0.1.7
 regex==2022.10.31

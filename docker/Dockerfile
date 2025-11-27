@@ -20,9 +20,18 @@ COPY docker/setup.sh /root/setup.sh
 RUN chmod +x /root/setup.sh && /root/setup.sh
 
 RUN pip install --upgrade pip
-RUN pip install -U openmim
-RUN mim install mmengine
-RUN mim install "mmcv>=2.0.0rc4"
+RUN pip install mmengine ninja
+RUN git clone https://github.com/open-mmlab/mmcv.git -b v2.1.0 \
+    && cd mmcv \
+    && MMCV_WITH_OPS=1 FORCE_CUDA=1 pip install --no-build-isolation . \
+    && cd .. \
+    && rm -rf mmcv
+RUN git clone https://github.com/open-mmlab/mmdetection.git -b v3.3.0 \
+    && cd mmdetection \
+    && pip install -r requirements/build.txt \
+    && FORCE_CUDA=1 pip install --no-build-isolation . \
+    && cd .. \
+    && rm -rf mmdetection
 
 COPY cli ${PROJECT_DIR}/cli
 COPY main.py ${PROJECT_DIR}
@@ -31,6 +40,7 @@ COPY requirements.all.txt ${PROJECT_DIR}
 COPY docker/requirements.pre.txt ${PROJECT_DIR}
 COPY config.yml ${PROJECT_DIR}
 COPY eval_config.yml ${PROJECT_DIR}
+COPY verify_rocm.py ${PROJECT_DIR}
 RUN set -x     && pip install --no-cache-dir --verbose -r ${PROJECT_DIR}/requirements.pre.txt
 RUN set -x     && pip install --no-cache-dir --verbose -r ${PROJECT_DIR}/requirements.all.txt
 
