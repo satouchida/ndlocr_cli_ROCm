@@ -115,7 +115,7 @@ docker exec -it ocr_cli_runner bash
 
 ### 推論処理の実行
 
-single形式(inputディレクトリ直下にimgディレクトリが存在する)のinputディレクトリ構成であれば、以下のコマンドで実行することができます。
+single形式(inputディレクトリ直下にimgディレクトリが存在する)のinputディレクトリ構成であれば、以下のコマンドで実行することができます。run_docker.sh内で指定したディレクトリ構成に従い、適宜```input_data_dir```と```output_dir```を指定してください。
 ```
 python main.py infer input_data_dir output_dir -s s
 ```
@@ -317,7 +317,7 @@ graph TD
 具体的には推論実行時にGPUのメモリ不足エラーが発生した場合、またはGPUメモリが十分に活用されていない場合に
 コンテナ内で以下のファイルで定義されている`GPU_MEM_LIMIT`という定数を変更することで状況が改善する場合があります。
 
-`/usr/local/lib/python3.8/dist-packages/mmdet/models/roi_heads/mask_heads/fcn_mask_head.py`
+`/usr/local/lib/python3.10/dist-packages/mmdet/models/roi_heads/mask_heads/fcn_mask_head.py`
 
 例えば`RuntimeError: HIP out of memory.`というエラーが発生した場合、
 `GPU_MEM_LIMIT`の行を次のように編集してGPUメモリの使用量を半減させることで

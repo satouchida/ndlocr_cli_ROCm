@@ -23,15 +23,23 @@ RUN pip install --upgrade pip
 RUN pip install mmengine ninja
 RUN git clone https://github.com/open-mmlab/mmcv.git -b v2.1.0 \
     && cd mmcv \
-    && MAX_JOBS=2 MMCV_WITH_OPS=1 FORCE_CUDA=1 pip install --no-build-isolation . \
+    && MAX_JOBS=2 MMCV_WITH_OPS=1 FORCE_CUDA=1 CXXFLAGS="-std=c++17" pip install --no-build-isolation . \
     && cd .. \
     && rm -rf mmcv
 RUN git clone https://github.com/open-mmlab/mmdetection.git -b v3.3.0 \
     && cd mmdetection \
     && pip install -r requirements/build.txt \
-    && MAX_JOBS=2 FORCE_CUDA=1 pip install --no-build-isolation . \
+    && MAX_JOBS=2 FORCE_CUDA=1 CXXFLAGS="-std=c++17" pip install --no-build-isolation . \
     && cd .. \
     && rm -rf mmdetection
+
+# Fix for ROCm/PyTorch library naming mismatch
+RUN cd /opt/conda/envs/py_3.10/lib/python3.10/site-packages/torch/lib \
+    && ln -sf libc10_cuda.so libc10_hip.so \
+    && ln -sf libtorch_cuda.so libtorch_hip.so \
+    && ln -sf libtorch_cuda_linalg.so libtorch_hip_linalg.so
+
+ENV LD_LIBRARY_PATH="/opt/conda/envs/py_3.10/lib/python3.10/site-packages/torch/lib:${LD_LIBRARY_PATH}"
 
 COPY cli ${PROJECT_DIR}/cli
 COPY main.py ${PROJECT_DIR}
