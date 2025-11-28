@@ -24,5 +24,4 @@ pyarrow==15.0.0
 
 kytea==0.1.7
 regex==2022.10.31
-torch==2.0.1
-torchvision==0.15.2
+

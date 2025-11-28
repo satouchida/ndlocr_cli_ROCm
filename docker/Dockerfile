@@ -20,6 +20,9 @@ COPY docker/setup.sh /root/setup.sh
 RUN chmod +x /root/setup.sh && /root/setup.sh
 
 RUN pip install --upgrade pip
+
+# Force reinstall torch from ROCm wheel to ensure GPU support (must be before mmcv build)
+RUN pip install --pre torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/rocm5.4.2
 RUN pip install mmengine ninja
 RUN git clone https://github.com/open-mmlab/mmcv.git -b v2.1.0 \
     && cd mmcv \
