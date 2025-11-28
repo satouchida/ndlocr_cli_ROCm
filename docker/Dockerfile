@@ -33,6 +33,8 @@ RUN git clone https://github.com/open-mmlab/mmdetection.git -b v3.3.0 \
     && cd .. \
     && rm -rf mmdetection
 
+
+
 # Fix for ROCm/PyTorch library naming mismatch
 RUN cd /opt/conda/envs/py_3.10/lib/python3.10/site-packages/torch/lib \
     && ln -sf libc10_cuda.so libc10_hip.so \

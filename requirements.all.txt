@@ -18,9 +18,11 @@ pyyaml
 rich
 scikit-image
 scikit-learn
-transformers==4.45.2
+transformers==4.35.0
 wheel
 pyarrow==15.0.0
 
 kytea==0.1.7
 regex==2022.10.31
+torch==2.0.1
+torchvision==0.15.2
