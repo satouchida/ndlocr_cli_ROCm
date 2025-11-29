@@ -1,1 +1,1 @@
-sudo docker run --device /dev/dxg --security-opt seccomp=unconfined -d --rm --name ocr_cli_runner --shm-size=256m -v "/mnt/d/sator/documents/ocr-refine/日本語書籍/宗教・カルト・法.jpeg":/root/input.jpeg -i ocr-v2-cli-py310:latest
+sudo docker run --device /dev/dxg --security-opt seccomp=unconfined -d --rm --name ocr_docker run --device /dev/dxg -it --rm --shm-size=8g --name ocr_cli_runner -v "/mnt/d/sator/documents/ocr-refine/宗教・カルト・法/宗教・カルト・法.jpeg":/root/input.jpeg ocr-v2-cli-py310:latest
