@@ -26,7 +26,7 @@ RUN echo "torch==2.0.1" > /root/constraints.txt \
     && echo "torchvision==0.15.2" >> /root/constraints.txt
 
 # Force reinstall torch from ROCm wheel to ensure GPU support (must be before mmcv build)
-RUN pip install --pre --force-reinstall torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/rocm5.4.2
+
 RUN pip install mmengine ninja
 # Set constraint file for build steps
 ENV PIP_CONSTRAINT=/root/constraints.txt
@@ -47,9 +47,9 @@ RUN git clone https://github.com/open-mmlab/mmdetection.git -b v3.3.0 \
 
 # Fix for ROCm/PyTorch library naming mismatch
 RUN cd /opt/conda/envs/py_3.10/lib/python3.10/site-packages/torch/lib \
-    && ln -sf libc10_cuda.so libc10_hip.so \
-    && ln -sf libtorch_cuda.so libtorch_hip.so \
-    && ln -sf libtorch_cuda_linalg.so libtorch_hip_linalg.so
+    && (test -e libc10_hip.so || ln -s libc10_cuda.so libc10_hip.so) \
+    && (test -e libtorch_hip.so || ln -s libtorch_cuda.so libtorch_hip.so) \
+    && (test -e libtorch_hip_linalg.so || ln -s libtorch_cuda_linalg.so libtorch_hip_linalg.so)
 
 ENV LD_LIBRARY_PATH="/opt/conda/envs/py_3.10/lib/python3.10/site-packages/torch/lib:${LD_LIBRARY_PATH}"
 
