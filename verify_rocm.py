@@ -1,38 +1,40 @@
 import torch
 import mmcv
-import mmdet
-from mmcv.ops import get_compiler_version, get_compiling_cuda_version
+import os
+import sys
 
-def check_rocm():
-    print(f"PyTorch version: {torch.__version__}")
-    print(f"CUDA available: {torch.cuda.is_available()}")
-    if torch.cuda.is_available():
-        print(f"Device count: {torch.cuda.device_count()}")
-        print(f"Device name: {torch.cuda.get_device_name(0)}")
-        try:
-            print(f"ROCm version: {torch.version.hip}")
-        except AttributeError:
-            print("ROCm version: Not found (might be CUDA)")
-    else:
-        print("WARNING: CUDA/ROCm not available!")
-
-def check_mmcv():
-    print(f"\nMMCV version: {mmcv.__version__}")
-    try:
-        from mmcv.ops import nms_rotated
-        print("MMCV Ops: Available")
-    except ImportError:
-        print("ERROR: MMCV Ops not available! MMCV might be installed without CUDA/ROCm support.")
+def verify():
+    print(f"PyTorch Version: {torch.__version__}")
+    print(f"PyTorch Debug Build: {torch.version.debug}")
     
-    print(f"MMCV Compiler: {get_compiler_version()}")
-    print(f"MMCV Compiling CUDA/ROCm version: {get_compiling_cuda_version()}")
+    # Check ROCm/HIP status
+    if hasattr(torch.version, 'hip'):
+        print(f"ROCm/HIP Version: {torch.version.hip}")
+    else:
+        print("ROCm/HIP Version: None (This looks like a CPU or CUDA-only build!)")
 
-def check_mmdet():
-    print(f"\nMMDet version: {mmdet.__version__}")
+    print(f"CUDA Available (mapped to HIP): {torch.cuda.is_available()}")
+    if torch.cuda.is_available():
+        print(f"Device Count: {torch.cuda.device_count()}")
+        print(f"Device Name: {torch.cuda.get_device_name(0)}")
+    
+    try:
+        from mmcv.ops import get_compiler_version, get_compiling_cuda_version
+        print(f"MMCV Compiler: {get_compiler_version()}")
+        print(f"MMCV Compiled against CUDA/ROCm: {get_compiling_cuda_version()}")
+    except ImportError:
+        print("ERROR: MMCV Ops not available! MMCV might be installed without GPU support.")
+    except Exception as e:
+        print(f"Error checking MMCV: {e}")
+
+    # Check for library files
+    torch_lib_path = os.path.join(os.path.dirname(torch.__file__), 'lib')
+    print(f"Checking libraries in {torch_lib_path}:")
+    for lib in ['libc10_hip.so', 'libtorch_hip.so', 'libc10_cuda.so', 'libtorch_cuda.so']:
+        path = os.path.join(torch_lib_path, lib)
+        exists = os.path.exists(path)
+        is_link = os.path.islink(path) if exists else False
+        print(f"  {lib}: {'Found' if exists else 'Missing'} {'(Symlink)' if is_link else ''}")
 
 if __name__ == "__main__":
-    print("=== Checking ROCm Environment ===")
-    check_rocm()
-    check_mmcv()
-    check_mmdet()
-    print("=== Check Complete ===")
+    verify()

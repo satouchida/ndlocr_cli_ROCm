@@ -26,7 +26,7 @@ RUN echo "torch==2.0.1" > /root/constraints.txt \
     && echo "torchvision==0.15.2" >> /root/constraints.txt
 
 # Force reinstall torch from ROCm wheel to ensure GPU support (must be before mmcv build)
-RUN pip install --pre torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/rocm5.4.2
+RUN pip install --pre --force-reinstall torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/rocm5.4.2
 RUN pip install mmengine ninja
 # Set constraint file for build steps
 ENV PIP_CONSTRAINT=/root/constraints.txt
@@ -64,7 +64,7 @@ COPY verify_rocm.py ${PROJECT_DIR}
 
 
 RUN set -x     && pip install --no-cache-dir --verbose -c /root/constraints.txt -r ${PROJECT_DIR}/requirements.pre.txt
-RUN set -x     && pip install --no-cache-dir --verbose -c /root/constraints.txt -r ${PROJECT_DIR}/requirements.all.txt
+RUN set -x     && pip install --no-cache-dir --verbose -c /root/constraints.txt -r ${PROJECT_DIR}/requirements.all.txt --extra-index-url https://download.pytorch.org/whl/rocm5.4.2
 
 COPY submodules/deskew_HT ${PROJECT_DIR}/submodules/deskew_HT
 COPY submodules/ndl_layout ${PROJECT_DIR}/submodules/ndl_layout
