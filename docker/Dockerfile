@@ -1,4 +1,4 @@
-FROM rocm/pytorch:rocm5.7_ubuntu22.04_py3.10_pytorch_2.0.1
+FROM rocm/pytorch:rocm6.4.3_ubuntu24.04_py3.12_pytorch_release_2.3.0
 
 ENV PROJECT_DIR=/root/ocr_cli
 
@@ -22,8 +22,9 @@ RUN chmod +x /root/setup.sh && /root/setup.sh
 RUN pip install --upgrade pip
 
 # Create constraints file to prevent PyTorch upgrade
-RUN echo "torch==2.0.1" > /root/constraints.txt \
-    && echo "torchvision==0.15.2" >> /root/constraints.txt
+# Using PyTorch 2.3.0 provided by the base image
+RUN echo "torch==2.3.0" > /root/constraints.txt \
+    && echo "torchvision" >> /root/constraints.txt
 
 # Force reinstall torch from ROCm wheel to ensure GPU support (must be before mmcv build)
 
@@ -31,7 +32,7 @@ RUN pip install mmengine ninja
 # Set constraint file for build steps
 ENV PIP_CONSTRAINT=/root/constraints.txt
 
-RUN git clone https://github.com/open-mmlab/mmcv.git -b v2.1.0 \
+RUN git clone https://github.com/open-mmlab/mmcv.git -b v2.2.0 \
     && cd mmcv \
     && MAX_JOBS=2 MMCV_WITH_OPS=1 FORCE_CUDA=1 CXXFLAGS="-std=c++17" pip install --no-build-isolation . \
     && cd .. \
@@ -46,12 +47,13 @@ RUN git clone https://github.com/open-mmlab/mmdetection.git -b v3.3.0 \
 
 
 # Fix for ROCm/PyTorch library naming mismatch
-RUN cd /opt/conda/envs/py_3.10/lib/python3.10/site-packages/torch/lib \
+# Path updated for Python 3.12 in ROCm 6.2+ image
+RUN cd /opt/conda/envs/py_3.12/lib/python3.12/site-packages/torch/lib \
     && (test -e libc10_hip.so || ln -s libc10_cuda.so libc10_hip.so) \
     && (test -e libtorch_hip.so || ln -s libtorch_cuda.so libtorch_hip.so) \
     && (test -e libtorch_hip_linalg.so || ln -s libtorch_cuda_linalg.so libtorch_hip_linalg.so)
 
-ENV LD_LIBRARY_PATH="/opt/conda/envs/py_3.10/lib/python3.10/site-packages/torch/lib:${LD_LIBRARY_PATH}"
+ENV LD_LIBRARY_PATH="/opt/conda/envs/py_3.12/lib/python3.12/site-packages/torch/lib:${LD_LIBRARY_PATH}"
 
 COPY cli ${PROJECT_DIR}/cli
 COPY main.py ${PROJECT_DIR}
@@ -64,7 +66,7 @@ COPY verify_rocm.py ${PROJECT_DIR}
 
 
 RUN set -x     && pip install --no-cache-dir --verbose -c /root/constraints.txt -r ${PROJECT_DIR}/requirements.pre.txt
-RUN set -x     && pip install --no-cache-dir --verbose -c /root/constraints.txt -r ${PROJECT_DIR}/requirements.all.txt --extra-index-url https://download.pytorch.org/whl/rocm5.4.2
+RUN set -x     && pip install --no-cache-dir --verbose -c /root/constraints.txt -r ${PROJECT_DIR}/requirements.all.txt
 
 COPY submodules/deskew_HT ${PROJECT_DIR}/submodules/deskew_HT
 COPY submodules/ndl_layout ${PROJECT_DIR}/submodules/ndl_layout

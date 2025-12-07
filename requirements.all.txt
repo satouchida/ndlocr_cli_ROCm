@@ -7,13 +7,13 @@ joblib
 lmdb
 lxml==4.9.3
 nltk==3.6.2
-numpy==1.24.4
+numpy==1.26.4
 omegaconf
 opencv-python
-pandas==1.5.3
+pandas==2.2.0
 mmpretrain==1.2.0
 pyrootutils
-lightning==2.0.0
+lightning==2.4.0
 pyyaml
 rich
 scikit-image
@@ -23,5 +23,5 @@ wheel
 pyarrow==15.0.0
 
 kytea==0.1.7
-regex==2022.10.31
+regex==2023.10.3
 
