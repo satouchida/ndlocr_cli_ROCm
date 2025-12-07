@@ -34,8 +34,49 @@ git clone --recursive https://github.com/ndl-lab/ndlocr_cli
 コンテナ内でROCmを利用します。
 
 ホストマシンにROCmドライバが正しくインストールされていることを確認してください。
-
-
+**Ubuntu 24.04, WSL2, ROCm 6.4.2を使用したセットアップを参照するにはこちら。**
+<details>
+#### i. 公式ガイドに沿ってROCmをインストール
+ ```
+ sudo apt update
+ wget https://repo.radeon.com/amdgpu-install/6.4.2.1/ubuntu/noble/amdgpu-install_6.4.60402-1_all.deb
+ sudo apt install ./amdgpu-install_6.4.60402-1_all.deb
+ amdgpu-install -y --usecase=wsl,rocm --no-dkms
+ rocminfo #verify install
+```
+#### ii. pytorch, migraphxのインストール
+ ```
+ sudo apt install python3-pip -y
+ pip3 install --upgrade pip wheel
+ wget https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.2/torch-2.6.0%2Brocm6.4.2.git76481f7c-cp312-cp312-linux_x86_64.whl
+ wget https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.2/torchvision-0.21.0%2Brocm6.4.2.git4040d51f-cp312-cp312-linux_x86_64.whl
+ wget https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.2/pytorch_triton_rocm-3.2.0%2Brocm6.4.2.git7e948ebf-cp312-cp312-linux_x86_64.whl
+ wget https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.2/torchaudio-2.6.0%2Brocm6.4.2.gitd8831425-cp312-cp312-linux_x86_64.whl
+ pip3 uninstall torch torchvision pytorch-triton-rocm
+ pip3 install torch-2.6.0+rocm6.4.2.git76481f7c-cp312-cp312-linux_x86_64.whl torchvision-0.21.0+rocm6.4.2.git4040d51f-cp312-cp312-linux_x86_64.whl torchaudio-2.6.0+rocm6.4.2.gitd8831425-cp312-cp312-linux_x86_64.whl pytorch_triton_rocm-3.2.0+rocm6.4.2.git7e948ebf-cp312-cp312-linux_x86_64.whl --break-system-packages #--break-system-packagesは仮想環境では不要
+ location=$(pip show torch | grep Location | awk -F ": " '{print $2}')
+ cd ${location}/torch/lib/
+ rm libhsa-runtime64.so*
+ conda install -c conda-forge gcc=12.1.0 # when GCC version is lower than 12.1.0
+ python3 -c 'import torch' 2> /dev/null && echo 'Success' || echo 'Failure' # verify installation, should output 'Success'
+ python3 -c 'import torch; print(torch.cuda.is_available())' # should output 'True'
+ ```
+#### iii. MIGraphXのインストール
+ ```
+ sudo apt install migraphx
+ git clone https://github.com/ROCmSoftwarePlatform/torch_migraphx.git
+ cd ./torch_migraphx/py
+ pip install . --no-build-isolation
+ python3 -c 'import torch_migraphx' 2> /dev/null && echo 'Success' || echo 'Failure' # verify installation, should output 'Success'
+ ```
+#### iv. TensorFlowのインストール
+ ```
+ pip install tf-keras --no-deps # check keras version, Keras 2 required
+ pip3 uninstall tensorflow-rocm
+ pip3 install https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.2/tf_nightly_rocm-2.19.0.dev20250708-cp312-cp312-manylinux_2_28_x86_64.whl --break-system-packages # --break-system-packagesは仮想環境では不要
+ python3 -c 'import tensorflow' 2> /dev/null && echo 'Success' || echo 'Failure' # verify installation, should output 'Success'
+ ```
+</details>
 
 ### 3. dockerのインストール
 https://docs.docker.com/engine/install/
