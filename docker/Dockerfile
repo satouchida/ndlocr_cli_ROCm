@@ -27,10 +27,18 @@ RUN chmod +x /root/setup.sh && /root/setup.sh
 RUN pip install --upgrade pip
 
 
-# Create constraints file to prevent PyTorch upgrade
-# Using PyTorch 2.3.0 provided by the base image
-RUN echo "torch==2.3.0" > /root/constraints.txt \
-    && echo "torchvision" >> /root/constraints.txt
+# Install verified PyTorch for ROCm on WSL2
+RUN pip uninstall -y torch torchvision torchaudio pytorch-triton-rocm || true \
+    && wget https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.2/torch-2.6.0%2Brocm6.4.2.git76481f7c-cp312-cp312-linux_x86_64.whl \
+    && wget https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.2/torchvision-0.21.0%2Brocm6.4.2.git4040d51f-cp312-cp312-linux_x86_64.whl \
+    && wget https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.2/pytorch_triton_rocm-3.2.0%2Brocm6.4.2.git7e948ebf-cp312-cp312-linux_x86_64.whl \
+    && wget https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.2/torchaudio-2.6.0%2Brocm6.4.2.gitd8831425-cp312-cp312-linux_x86_64.whl \
+    && pip install torch-2.6.0+rocm6.4.2.git76481f7c-cp312-cp312-linux_x86_64.whl \
+    torchvision-0.21.0+rocm6.4.2.git4040d51f-cp312-cp312-linux_x86_64.whl \
+    torchaudio-2.6.0+rocm6.4.2.gitd8831425-cp312-cp312-linux_x86_64.whl \
+    pytorch_triton_rocm-3.2.0+rocm6.4.2.git7e948ebf-cp312-cp312-linux_x86_64.whl \
+    && rm *.whl \
+    && touch /root/constraints.txt
 
 # Force reinstall torch from ROCm wheel to ensure GPU support (must be before mmcv build)
 

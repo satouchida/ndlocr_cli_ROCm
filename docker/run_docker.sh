@@ -5,5 +5,5 @@ sudo docker run --device /dev/dxg --device /dev/dri --mount type=bind,src=/usr/l
     -e HSA_OVERRIDE_GFX_VERSION=11.0.0 \
     --group-add video \
     --group-add render \
-    --group-add $(getent group render | cut -d':' -f 3) \
+    --group-add $(stat -c '%g' /dev/dri/renderD128) \
     ocr-v2-cli-py312:latest tail -f /dev/null
