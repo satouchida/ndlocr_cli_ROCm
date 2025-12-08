@@ -1,7 +1,9 @@
 FROM rocm/dev-ubuntu-24.04:6.4.2
 FROM rocm/pytorch:rocm6.4.3_ubuntu24.04_py3.12_pytorch_release_2.3.0
 
-RUN groupadd -g 109 render && groupadd -g 109 video
+RUN getent group render || groupadd -g 109 render
+RUN getent group video || groupadd video
+RUN usermod -aG render,video root
 
 ENV PROJECT_DIR=/root/ocr_cli
 
