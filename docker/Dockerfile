@@ -38,7 +38,7 @@ RUN pip install mmengine ninja
 # Set constraint file for build steps
 ENV PIP_CONSTRAINT=/root/constraints.txt
 
-RUN git clone https://github.com/open-mmlab/mmcv.git -b v2.2.0 \
+RUN git clone https://github.com/open-mmlab/mmcv.git -b v2.1.0 \
     && cd mmcv \
     && MAX_JOBS=2 MMCV_WITH_OPS=1 FORCE_CUDA=1 CXXFLAGS="-std=c++17" pip install --no-build-isolation . \
     && cd .. \
