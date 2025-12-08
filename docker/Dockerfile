@@ -1,4 +1,6 @@
 FROM rocm/pytorch:rocm6.4.3_ubuntu24.04_py3.12_pytorch_release_2.3.0
+FROM rocm/dev-ubuntu-24.04:6.4.2
+RUN groupadd -g 109 render && groupadd -g 109 video && useradd -g 109 -ms /bin/bash root
 
 ENV PROJECT_DIR=/root/ocr_cli
 
@@ -20,6 +22,7 @@ COPY docker/setup.sh /root/setup.sh
 RUN chmod +x /root/setup.sh && /root/setup.sh
 
 RUN pip install --upgrade pip
+
 
 # Create constraints file to prevent PyTorch upgrade
 # Using PyTorch 2.3.0 provided by the base image

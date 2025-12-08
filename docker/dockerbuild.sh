@@ -1,8 +1,6 @@
 TAG=ocr-v2-cli-py312
 DOCKERIGNORE=docker/dockerignore
 DOCKERFILE=docker/Dockerfile
-FROM rocm/dev-ubuntu-24.04:6.4.2
-RUN groupadd -g 109 render && groupadd -g 109 video && useradd -g 109 -ms /bin/bash root
 wget -nc https://lab.ndl.go.jp/dataset/ndlocr_v2/text_recognition_lightning/resnet-orient2.ckpt -P ./submodules/text_recognition_lightning/models
 wget -nc https://lab.ndl.go.jp/dataset/ndlocr_v2/text_recognition_lightning/rf_author/model.pkl -P ./submodules/text_recognition_lightning/models/rf_author/
 wget -nc https://lab.ndl.go.jp/dataset/ndlocr_v2/text_recognition_lightning/rf_title/model.pkl -P ./submodules/text_recognition_lightning/models/rf_title/
