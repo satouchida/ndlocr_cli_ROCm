@@ -5,8 +5,8 @@ hydra-colorlog
 hydra-core
 joblib
 lmdb
-lxml==4.9.3
-nltk==3.6.2
+lxml==5.2.1
+nltk==3.9.1
 numpy==1.26.4
 omegaconf
 opencv-python
@@ -21,7 +21,6 @@ scikit-learn
 transformers==4.35.0
 wheel
 pyarrow==15.0.0
-
-kytea==0.1.7
+kytea==0.1.9
 regex==2023.10.3
 
