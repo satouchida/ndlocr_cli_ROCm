@@ -45,6 +45,23 @@ def verify():
     print(f"/dev/kfd exists: {os.path.exists('/dev/kfd')}")
     print(f"/dev/dri exists: {os.path.exists('/dev/dri')}")
 
+    print("\n--- WSL2 Driver Checks ---")
+    wsl_lib_path = "/usr/lib/wsl/lib"
+    if os.path.exists(wsl_lib_path):
+        print(f"Listing {wsl_lib_path} (first 10 files):")
+        try:
+            files = os.listdir(wsl_lib_path)
+            for f in sorted(files)[:10]:
+                print(f"  {f}")
+            if "libdxcore.so" in files:
+                print("  libdxcore.so: Found")
+            else:
+                print("  libdxcore.so: Missing")
+        except Exception as e:
+            print(f"  Error listing {wsl_lib_path}: {e}")
+    else:
+        print(f"{wsl_lib_path} does not exist!")
+
     print("\n--- rocminfo ---")
     try:
         os.system("rocminfo | grep 'Name:' | head -n 5")

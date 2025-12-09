@@ -1,6 +1,6 @@
 FROM rocm/dev-ubuntu-24.04:6.4.2
 
-RUN getent group render || groupadd -g 109 render
+RUN getent group render || groupadd render
 RUN getent group video || groupadd video
 RUN usermod -aG render,video root
 
