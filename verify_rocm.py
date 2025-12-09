@@ -36,5 +36,20 @@ def verify():
         is_link = os.path.islink(path) if exists else False
         print(f"  {lib}: {'Found' if exists else 'Missing'} {'(Symlink)' if is_link else ''}")
 
+    print("\n--- Environment Variables ---")
+    for key in ['HSA_OVERRIDE_GFX_VERSION', 'ROCM_PATH', 'LD_LIBRARY_PATH', 'HIP_VISIBLE_DEVICES']:
+        print(f"{key}: {os.environ.get(key, 'Not Set')}")
+
+    print("\n--- Device Checks ---")
+    print(f"/dev/dxg exists: {os.path.exists('/dev/dxg')}")
+    print(f"/dev/kfd exists: {os.path.exists('/dev/kfd')}")
+    print(f"/dev/dri exists: {os.path.exists('/dev/dri')}")
+
+    print("\n--- rocminfo ---")
+    try:
+        os.system("rocminfo | grep 'Name:' | head -n 5")
+    except:
+        print("Failed to run rocminfo")
+
 if __name__ == "__main__":
     verify()

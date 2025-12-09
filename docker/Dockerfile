@@ -17,7 +17,11 @@ RUN set -x \
     curl \
     libgl1-mesa-dev \
     libglib2.0-0 \
-    build-essential
+    build-essential \
+    rocm-libs \
+    rccl \
+    libnuma-dev \
+    rocminfo
 
 RUN set -x \
     && apt update \
