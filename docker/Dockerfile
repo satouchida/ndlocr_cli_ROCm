@@ -1,5 +1,4 @@
 FROM rocm/dev-ubuntu-24.04:6.4.2
-FROM rocm/pytorch:rocm6.4.3_ubuntu24.04_py3.12_pytorch_release_2.3.0
 
 RUN getent group render || groupadd -g 109 render
 RUN getent group video || groupadd video
@@ -9,7 +8,16 @@ ENV PROJECT_DIR=/root/ocr_cli
 
 RUN set -x \
     && apt update \
-    && apt upgrade -y
+    && apt upgrade -y \
+    && DEBIAN_FRONTEND=noninteractive apt install -y \
+    python3-pip \
+    python3-venv \
+    git \
+    wget \
+    curl \
+    libgl1-mesa-dev \
+    libglib2.0-0 \
+    build-essential
 
 RUN set -x \
     && apt update \
@@ -23,6 +31,11 @@ RUN localedef -f UTF-8 -i ja_JP ja_JP.utf8
 
 COPY docker/setup.sh /root/setup.sh
 RUN chmod +x /root/setup.sh && /root/setup.sh
+
+
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN pip install --upgrade pip
 
@@ -46,7 +59,8 @@ RUN pip install mmengine ninja
 # Set constraint file for build steps
 ENV PIP_CONSTRAINT=/root/constraints.txt
 
-RUN git clone https://github.com/open-mmlab/mmcv.git -b v2.1.0 \
+
+RUN git clone https://github.com/open-mmlab/mmcv.git -b v2.2.0 \
     && cd mmcv \
     && MAX_JOBS=2 MMCV_WITH_OPS=1 FORCE_CUDA=1 CXXFLAGS="-std=c++17" pip install --no-build-isolation . \
     && cd .. \
@@ -61,13 +75,14 @@ RUN git clone https://github.com/open-mmlab/mmdetection.git -b v3.3.0 \
 
 
 # Fix for ROCm/PyTorch library naming mismatch
-# Path updated for Python 3.12 in ROCm 6.2+ image
-RUN cd /opt/conda/envs/py_3.12/lib/python3.12/site-packages/torch/lib \
+# Path updated for Venv Python 3.12 (site-packages)
+RUN cd /opt/venv/lib/python3.12/site-packages/torch/lib \
     && (test -e libc10_hip.so || ln -s libc10_cuda.so libc10_hip.so) \
     && (test -e libtorch_hip.so || ln -s libtorch_cuda.so libtorch_hip.so) \
     && (test -e libtorch_hip_linalg.so || ln -s libtorch_cuda_linalg.so libtorch_hip_linalg.so)
 
-ENV LD_LIBRARY_PATH="/opt/conda/envs/py_3.12/lib/python3.12/site-packages/torch/lib:${LD_LIBRARY_PATH}"
+# Use explicit path separation to avoid undefined variable error
+ENV LD_LIBRARY_PATH="/opt/venv/lib/python3.12/site-packages/torch/lib"
 
 COPY cli ${PROJECT_DIR}/cli
 COPY main.py ${PROJECT_DIR}
